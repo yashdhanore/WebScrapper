@@ -2,6 +2,7 @@ import urllib.request
 import json
 from bs4 import BeautifulSoup
 import lxml
+import requests
 
 url = 'https://google.com/search?q=levi+news+scam'
 
@@ -18,8 +19,23 @@ html = raw_response.decode("utf-8")
 
 soup = BeautifulSoup(html, 'lxml')
 
+all_links = []
+
 for result in soup.select('.tF2Cxc')[:5]:
     title = result.select_one('.DKV0Md').text
     link = result.select_one('.yuRUbf a')['href']
 
-    print(link, sep='\n')
+    all_links.append(link)
+
+html_text = requests.get(
+    all_links[0]).text
+soup = BeautifulSoup(html_text, 'lxml')
+
+detail = soup.find_all(
+    'p', class_='dcr-xry7m2')
+
+with open('out.txt', 'w') as f:
+    for desc in detail:
+        i = desc.text
+        f.write(i)
+        f.write('\n')
