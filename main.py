@@ -1,14 +1,25 @@
+import urllib.request
+import json
 from bs4 import BeautifulSoup
-import requests
+import lxml
 
-html_text = requests.get(
-    'https://www.reuters.com/technology/twitter-adopts-poison-pill-fight-musk-2022-04-15/').text
-soup = BeautifulSoup(html_text, 'lxml')
-info = soup.find(
-    'div', class_='article-body__content__3VtU3 paywall-article')
-detail = info.find_all(
-    'p', class_='text__text__1FZLe text__dark-grey__3Ml43 text__regular__2N1Xr text__large__nEccO body__base__22dCE body__large_body__FV5_X article-body__element__OOj6H')
-for desc in detail:
-    i = desc.text
-    print(i)
-    print('')
+url = 'https://google.com/search?q=levi+news+scam'
+
+# Perform the request
+request = urllib.request.Request(url)
+
+# Set a normal User Agent header
+request.add_header(
+    'User-Agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36')
+raw_response = urllib.request.urlopen(request).read()
+
+# Read the repsonse as a utf-8 string
+html = raw_response.decode("utf-8")
+
+soup = BeautifulSoup(html, 'lxml')
+
+for result in soup.select('.tF2Cxc')[:5]:
+    title = result.select_one('.DKV0Md').text
+    link = result.select_one('.yuRUbf a')['href']
+
+    print(link, sep='\n')
