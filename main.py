@@ -4,7 +4,14 @@ from bs4 import BeautifulSoup
 import lxml
 import requests
 
-url = 'https://google.com/search?q=Wadapav'
+search_query = input("input search query: ")
+
+search_query = search_query.replace(" ", "+")
+
+# keywords that need to be looked for in the content
+keywords = []
+
+url = 'https://google.com/search?q='+search_query
 
 # Perform the request
 request = urllib.request.Request(url)
@@ -29,16 +36,23 @@ for result in soup.select('.tF2Cxc')[:5]:
 
 
 with open('out.txt', 'w', encoding="utf-8") as f:
-    for current in all_links:
-        print(current)
-        html_text = requests.get(current).text
+    for current_link in all_links:
+        # print(current_link)
+        html_text = requests.get(current_link).text
         soup = BeautifulSoup(html_text, 'lxml')
 
         detail = soup.find_all('p')
 
-        f.write(current)
+        f.write(current_link)
         if detail:
             for desc in detail:
-                i = desc.text
-                f.write(i)
+                text = desc.text
+                # look for keywords if keywords list is not empty else dont
+                if keywords:
+                    for word in keywords:
+                        if word in text:
+                            f.write(text)
+                else:
+                    f.write(text)
+
                 f.write('\n')
